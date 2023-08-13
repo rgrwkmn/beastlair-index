@@ -17,9 +17,9 @@ class AssetLink extends (CustomElement(HTMLAnchorElement)) {
     static tagName = "asset-link";
     static tagType = "a";
     highlighted = false;
-    highlight(highlightedGraphemes) {
-        const regExp = new RegExp(`^(${highlightedGraphemes})`,"iu");
-        this.highlighted = highlightedGraphemes !== "" && regExp.test(this.name);
+    highlight(searchText) {
+        const regExp = new RegExp(`^(${searchText})`,"iu");
+        this.highlighted = searchText !== "" && regExp.test(this.name);
         if (this.highlighted) {
             const template = '<mark class="asset-mark">$1</mark>';
             this.innerHTML = this.name.replace(regExp, template)
@@ -45,9 +45,9 @@ class AssetItem extends (CustomElement(HTMLLIElement)) {
     static tagName = "asset-item";
     static tagType = "li";
     link = this.getCustomElement(AssetLink);
-    highlight(highlightedGraphemes) {
-        this.link.highlight(highlightedGraphemes);
-        const filtered = highlightedGraphemes === "" || this.link.highlighted;
+    highlight(searchText) {
+        this.link.highlight(searchText);
+        const filtered = searchText === "" || this.link.highlighted;
         this.ariaHidden = filtered ? null : true;
         this.classList.toggle("asset-item--filtered", !filtered)
     }
@@ -61,52 +61,55 @@ class AssetItem extends (CustomElement(HTMLLIElement)) {
 class AssetList extends (CustomElement(HTMLOListElement)) {
     static tagName = "asset-list";
     static tagType = "ol";
-    highlightedGraphemes = "";
     keystroke = this.keystroke.bind(this);
-    filterInput = null;
-    highlight(key) {
-	    console.log(key);
-        if (key === "") {
-            this.highlightedGraphemes = ""
-        } else {
-            this.highlightedGraphemes += key.toLocaleLowerCase()
-        }
+    searchTextEl = null;
+    searchText = '';
+    originalSearchText = '';
+    scrollAnim = null;
+    highlight() {
         let firstHighlightedAssetItem;
         for (const assetItem of this.children) {
             if (!(assetItem instanceof AssetItem)) continue;
-            assetItem.highlight(this.highlightedGraphemes);
+            requestAnimationFrame(() => {
+                assetItem.highlight(this.searchText);
+            });
             if (firstHighlightedAssetItem === undefined && assetItem.highlighted) {
                 firstHighlightedAssetItem = assetItem
             }
         }
         if (firstHighlightedAssetItem) {
-            firstHighlightedAssetItem.focus();
-            firstHighlightedAssetItem.scrollIntoView({
-                behavior: "smooth",
-                block: "nearest"
+            cancelAnimationFrame(this.scrollAnim);
+            this.scrollAnim = requestAnimationFrame(() => {
+                firstHighlightedAssetItem.focus();
+                firstHighlightedAssetItem.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest"
+                });
             });
         }
-	    console.log('grapheme', this.highlightedGraphemes);
-        this.searchText.innerText = this.highlightedGraphemes;
     }
     mount() {
-        this.searchText = document.getElementById('searchText');
+        this.searchTextEl = document.getElementById('searchTextEl');
+        this.originalSearchText = this.searchTextEl.innerText;
         document.body.addEventListener("keyup", this.keystroke);
     }
     keystroke({key: key}) {
         console.log('key', key);
         if (key === "Escape") {
-            this.highlight("");
-            return
+            this.searchText = '';
+        } else if (key === "Backspace" && this.searchText.length > 0) {
+            this.searchText = this.searchText.slice(0, -1);
+        } else if (key.length === 1) {
+            this.searchText += key.toLocaleLowerCase();
         }
-        if (key === "Backspace" && this.highlightedGraphemes.length > 0) {
-            this.highlight(this.highlightedGraphemes.slice(0, -1));
-        }
-        const notGrapheme = key.length !== 1;
-        if (notGrapheme) {
-            return
-        }
-        this.highlight(key)
+        requestAnimationFrame(() => {
+            if (this.searchText === '') {
+                this.searchTextEl.innerText = this.originalSearchText;
+            } else {
+                this.searchTextEl.innerText = this.searchText;
+            }
+        });
+        this.highlight();
     }
 }
 function main() {

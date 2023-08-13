@@ -82,7 +82,7 @@
 
                     body {
                         padding: 0;
-			margin: 0;
+			            margin: 0;
                     }
 
                     html {
@@ -90,10 +90,12 @@
                         font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
                         font-size: 100%;
                         color: var(--theme-text);
+                        margin: 0;
+                        padding: 0;
                     }
 
                     .asset-list {
-                        display: block;
+                        display: inline-block;
                         list-style: none;
                         margin: 3.5rem;
                         padding: 0;
@@ -165,54 +167,77 @@
                         opacity: 1
                     }
 
-                    .indexHeader {
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        padding: 1rem 3.5rem;
+                    .index-ui {
+                        grid-template-areas:
+                            "h h h"
+                            "l d d"
+                            "l d d";
+                        height: 100vh;
+                        width: 100vw;
+                        min-width: 900px;
+                    }
+
+                    .index-ui > header {
+                        grid-area: h;
+                        height: 3.5rem;
+                    }
+
+                    .index-ui > .asset-list {
+                        grid-area: l;
+                        overflow: scroll;
+                        height: calc(100vh - 3.5rem);
+                    }
+                    .index-ui > .asset-detail {
+                        grid-area: d;
+                        overflow: scroll;
+                        height: calc(100vh - 3.5rem);
                     }
                 </style>
             </head>
             <body>
-                <header class="indexHeader">
-                  <span id="searchText">Type to Search</span>
-                </header>
-                <ol aria-label="asset list" is="asset-list" class="asset-list">
-                    <xsl:for-each select="list/*">
-                        <li is="asset-item">
-                            <xsl:attribute name="class">
-                                <xsl:text>asset-item asset-item--</xsl:text>
-                                <xsl:value-of select="name()" />
-                            </xsl:attribute>
-
-                            <a is="asset-link">
-                                <xsl:attribute name="aria-label">
-                                    <xsl:value-of select="name()" />
-                                    <xsl:text> </xsl:text>
-                                    <xsl:value-of select="." />
-                                </xsl:attribute>
-
-                                <xsl:attribute name="data-name">
-                                    <xsl:value-of select="." />
-                                </xsl:attribute>
-
-                                <xsl:attribute name="href">
-                                    <xsl:value-of select="." />
-                                    <xsl:if test="name() = 'directory'">
-                                        <xsl:text>/</xsl:text>
-                                    </xsl:if>
-                                </xsl:attribute>
-
+                <div class="index-ui">
+                    <header>
+                        <span id="searchTextEl">Type to Search</span>
+                    </header>
+                    <ol aria-label="asset list" is="asset-list" class="asset-list">
+                        <xsl:for-each select="list/*">
+                            <li is="asset-item">
                                 <xsl:attribute name="class">
-                                    <xsl:text>asset-link asset-link--</xsl:text>
+                                    <xsl:text>asset-item asset-item--</xsl:text>
                                     <xsl:value-of select="name()" />
                                 </xsl:attribute>
 
-                                <xsl:value-of select="." />
-                            </a>
-                        </li>
-                    </xsl:for-each>
-                </ol>
+                                <a is="asset-link">
+                                    <xsl:attribute name="aria-label">
+                                        <xsl:value-of select="name()" />
+                                        <xsl:text> </xsl:text>
+                                        <xsl:value-of select="." />
+                                    </xsl:attribute>
+
+                                    <xsl:attribute name="data-name">
+                                        <xsl:value-of select="." />
+                                    </xsl:attribute>
+
+                                    <xsl:attribute name="href">
+                                        <xsl:value-of select="." />
+                                        <xsl:if test="name() = 'directory'">
+                                            <xsl:text>/</xsl:text>
+                                        </xsl:if>
+                                    </xsl:attribute>
+
+                                    <xsl:attribute name="class">
+                                        <xsl:text>asset-link asset-link--</xsl:text>
+                                        <xsl:value-of select="name()" />
+                                    </xsl:attribute>
+
+                                    <xsl:value-of select="." />
+                                </a>
+                            </li>
+                        </xsl:for-each>
+                    </ol>
+                    <ul class="asset-detail">
+                    </ul>
+                </div>
 
 <xsl:variable name="s1">
   <![CDATA[
@@ -235,9 +260,9 @@ class AssetLink extends (CustomElement(HTMLAnchorElement)) {
     static tagName = "asset-link";
     static tagType = "a";
     highlighted = false;
-    highlight(highlightedGraphemes) {
-        const regExp = new RegExp(`^(${highlightedGraphemes})`,"iu");
-        this.highlighted = highlightedGraphemes !== "" && regExp.test(this.name);
+    highlight(searchText) {
+        const regExp = new RegExp(`^(${searchText})`,"iu");
+        this.highlighted = searchText !== "" && regExp.test(this.name);
         if (this.highlighted) {
             const template = '<mark class="asset-mark">$1</mark>';
             this.innerHTML = this.name.replace(regExp, template)
@@ -263,9 +288,9 @@ class AssetItem extends (CustomElement(HTMLLIElement)) {
     static tagName = "asset-item";
     static tagType = "li";
     link = this.getCustomElement(AssetLink);
-    highlight(highlightedGraphemes) {
-        this.link.highlight(highlightedGraphemes);
-        const filtered = highlightedGraphemes === "" || this.link.highlighted;
+    highlight(searchText) {
+        this.link.highlight(searchText);
+        const filtered = searchText === "" || this.link.highlighted;
         this.ariaHidden = filtered ? null : true;
         this.classList.toggle("asset-item--filtered", !filtered)
     }
@@ -279,52 +304,55 @@ class AssetItem extends (CustomElement(HTMLLIElement)) {
 class AssetList extends (CustomElement(HTMLOListElement)) {
     static tagName = "asset-list";
     static tagType = "ol";
-    highlightedGraphemes = "";
     keystroke = this.keystroke.bind(this);
-    filterInput = null;
-    highlight(key) {
-	    console.log(key);
-        if (key === "") {
-            this.highlightedGraphemes = ""
-        } else {
-            this.highlightedGraphemes += key.toLocaleLowerCase()
-        }
+    searchTextEl = null;
+    searchText = '';
+    originalSearchText = '';
+    scrollAnim = null;
+    highlight() {
         let firstHighlightedAssetItem;
         for (const assetItem of this.children) {
             if (!(assetItem instanceof AssetItem)) continue;
-            assetItem.highlight(this.highlightedGraphemes);
+            requestAnimationFrame(() => {
+                assetItem.highlight(this.searchText);
+            });
             if (firstHighlightedAssetItem === undefined && assetItem.highlighted) {
                 firstHighlightedAssetItem = assetItem
             }
         }
         if (firstHighlightedAssetItem) {
-            firstHighlightedAssetItem.focus();
-            firstHighlightedAssetItem.scrollIntoView({
-                behavior: "smooth",
-                block: "nearest"
+            cancelAnimationFrame(this.scrollAnim);
+            this.scrollAnim = requestAnimationFrame(() => {
+                firstHighlightedAssetItem.focus();
+                firstHighlightedAssetItem.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest"
+                });
             });
         }
-	    console.log('grapheme', this.highlightedGraphemes);
-        this.searchText.innerText = this.highlightedGraphemes;
     }
     mount() {
-        this.searchText = document.getElementById('searchText');
+        this.searchTextEl = document.getElementById('searchTextEl');
+        this.originalSearchText = this.searchTextEl.innerText;
         document.body.addEventListener("keyup", this.keystroke);
     }
     keystroke({key: key}) {
         console.log('key', key);
         if (key === "Escape") {
-            this.highlight("");
-            return
+            this.searchText = '';
+        } else if (key === "Backspace" && this.searchText.length > 0) {
+            this.searchText = this.searchText.slice(0, -1);
+        } else if (key.length === 1) {
+            this.searchText += key.toLocaleLowerCase();
         }
-        if (key === "Backspace" && this.highlightedGraphemes.length > 0) {
-            this.highlight(this.highlightedGraphemes.slice(0, -1));
-        }
-        const notGrapheme = key.length !== 1;
-        if (notGrapheme) {
-            return
-        }
-        this.highlight(key)
+        requestAnimationFrame(() => {
+            if (this.searchText === '') {
+                this.searchTextEl.innerText = this.originalSearchText;
+            } else {
+                this.searchTextEl.innerText = this.searchText;
+            }
+        });
+        this.highlight();
     }
 }
 function main() {
@@ -333,7 +361,6 @@ function main() {
     AssetList.define()
 }
 document.addEventListener("DOMContentLoaded", main);
-
   ]]>
 </xsl:variable>
 
