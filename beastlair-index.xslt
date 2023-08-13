@@ -283,7 +283,7 @@ class AssetList extends (CustomElement(HTMLOListElement)) {
     keystroke = this.keystroke.bind(this);
     filterInput = null;
     highlight(key) {
-	console.log(key);
+	    console.log(key);
         if (key === "") {
             this.highlightedGraphemes = ""
         } else {
@@ -297,19 +297,14 @@ class AssetList extends (CustomElement(HTMLOListElement)) {
                 firstHighlightedAssetItem = assetItem
             }
         }
-        if (firstHighlightedAssetItem === undefined) {
-            if (this.highlightedGraphemes !== "") {
-                this.highlight("");
-                return;
-            }
-        } else {
+        if (firstHighlightedAssetItem) {
             firstHighlightedAssetItem.focus();
             firstHighlightedAssetItem.scrollIntoView({
                 behavior: "smooth",
                 block: "nearest"
             });
         }
-	console.log('grapheme', this.highlightedGraphemes);
+	    console.log('grapheme', this.highlightedGraphemes);
         this.searchText.innerText = this.highlightedGraphemes;
     }
     mount() {
@@ -317,9 +312,13 @@ class AssetList extends (CustomElement(HTMLOListElement)) {
         document.body.addEventListener("keyup", this.keystroke);
     }
     keystroke({key: key}) {
+        console.log('key', key);
         if (key === "Escape") {
             this.highlight("");
             return
+        }
+        if (key === "Backspace" && this.highlightedGraphemes.length > 0) {
+            this.highlight(this.highlightedGraphemes.slice(0, -1));
         }
         const notGrapheme = key.length !== 1;
         if (notGrapheme) {
