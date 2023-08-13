@@ -97,8 +97,7 @@
                     .asset-list {
                         display: inline-block;
                         list-style: none;
-                        margin: 3.5rem;
-                        padding: 0;
+                        padding: 1.75rem;
                     }
 
                     .asset-item {
@@ -180,6 +179,7 @@
                     .index-ui > header {
                         grid-area: h;
                         height: 3.5rem;
+                        padding: 1.75rem;
                     }
 
                     .index-ui > .asset-list {
@@ -261,15 +261,15 @@ class AssetLink extends (CustomElement(HTMLAnchorElement)) {
     static tagType = "a";
     highlighted = false;
     highlight(searchText) {
-        const regExp = new RegExp(`^(${searchText})`,"iu");
+        const regExp = new RegExp(`(${searchText})`,"iu");
         this.highlighted = searchText !== "" && regExp.test(this.name);
         if (this.highlighted) {
             const template = '<mark class="asset-mark">$1</mark>';
-            this.innerHTML = this.name.replace(regExp, template)
+            this.innerHTML = this.name.replace(regExp, template);
         } else {
-            this.textContent = this.name
+            this.textContent = this.name;
         }
-        this.classList.toggle("asset-link--highlighted", this.highlighted)
+        this.classList.toggle("asset-link--highlighted", this.highlighted);
     }
     get name() {
         return this.dataset.name
@@ -358,7 +358,7 @@ class AssetList extends (CustomElement(HTMLOListElement)) {
 function main() {
     AssetLink.define();
     AssetItem.define();
-    AssetList.define()
+    AssetList.define();
 }
 document.addEventListener("DOMContentLoaded", main);
   ]]>

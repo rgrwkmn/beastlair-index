@@ -18,15 +18,15 @@ class AssetLink extends (CustomElement(HTMLAnchorElement)) {
     static tagType = "a";
     highlighted = false;
     highlight(searchText) {
-        const regExp = new RegExp(`^(${searchText})`,"iu");
+        const regExp = new RegExp(`(${searchText})`,"iu");
         this.highlighted = searchText !== "" && regExp.test(this.name);
         if (this.highlighted) {
             const template = '<mark class="asset-mark">$1</mark>';
-            this.innerHTML = this.name.replace(regExp, template)
+            this.innerHTML = this.name.replace(regExp, template);
         } else {
-            this.textContent = this.name
+            this.textContent = this.name;
         }
-        this.classList.toggle("asset-link--highlighted", this.highlighted)
+        this.classList.toggle("asset-link--highlighted", this.highlighted);
     }
     get name() {
         return this.dataset.name
@@ -115,6 +115,6 @@ class AssetList extends (CustomElement(HTMLOListElement)) {
 function main() {
     AssetLink.define();
     AssetItem.define();
-    AssetList.define()
+    AssetList.define();
 }
 document.addEventListener("DOMContentLoaded", main);
