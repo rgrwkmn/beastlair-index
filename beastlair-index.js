@@ -63,6 +63,7 @@ class AssetList extends (CustomElement(HTMLOListElement)) {
     static tagType = "ol";
     highlightedGraphemes = "";
     keystroke = this.keystroke.bind(this);
+    filterInput = null;
     highlight(key) {
         if (key === "") {
             this.highlightedGraphemes = ""
@@ -86,10 +87,13 @@ class AssetList extends (CustomElement(HTMLOListElement)) {
         firstHighlightedAssetItem.scrollIntoView({
             behavior: "smooth",
             block: "nearest"
-        })
+        });
+
+        this.filterInput.value = this.highlightedGraphemes;
     }
     mount() {
-        document.body.addEventListener("keyup", this.keystroke)
+        this.filterInput = document.getElementById('filter');
+        this.filterInput.addEventListener("keyup", this.keystroke);
     }
     keystroke({key: key}) {
         if (key === "Escape") {
