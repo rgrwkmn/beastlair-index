@@ -81,7 +81,8 @@
                     }
 
                     body {
-                        margin: 3.5rem
+                        padding: 0;
+			margin: 0;
                     }
 
                     html {
@@ -94,8 +95,8 @@
                     .asset-list {
                         display: block;
                         list-style: none;
-                        margin: 0;
-                        padding: 0
+                        margin: 3.5rem;
+                        padding: 0;
                     }
 
                     .asset-item {
@@ -163,13 +164,20 @@
                     .asset-item--filtered>.asset-link:focus,.asset-item--filtered>.asset-link:hover {
                         opacity: 1
                     }
+
+                    .indexHeader {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        padding: 1rem 3.5rem;
+                    }
                 </style>
             </head>
             <body>
+                <header class="indexHeader">
+                  <span id="searchText">Type to Search</span>
+                </header>
                 <ol aria-label="asset list" is="asset-list" class="asset-list">
-                    <li>
-                        <input type="text" id="filter" />
-                    </li>
                     <xsl:for-each select="list/*">
                         <li is="asset-item">
                             <xsl:attribute name="class">
@@ -205,7 +213,9 @@
                         </li>
                     </xsl:for-each>
                 </ol>
-                <script>
+
+<xsl:variable name="s1">
+  <![CDATA[
 const CustomElement = ParentClass=>class CustomElement extends ParentClass {
     static define() {
         customElements.define(this.tagName, this, {
@@ -273,6 +283,7 @@ class AssetList extends (CustomElement(HTMLOListElement)) {
     keystroke = this.keystroke.bind(this);
     filterInput = null;
     highlight(key) {
+	console.log(key);
         if (key === "") {
             this.highlightedGraphemes = ""
         } else {
@@ -280,6 +291,7 @@ class AssetList extends (CustomElement(HTMLOListElement)) {
         }
         let firstHighlightedAssetItem;
         for (const assetItem of this.children) {
+            if (!(assetItem instanceof AssetItem)) continue;
             assetItem.highlight(this.highlightedGraphemes);
             if (firstHighlightedAssetItem === undefined && assetItem.highlighted) {
                 firstHighlightedAssetItem = assetItem
@@ -287,21 +299,22 @@ class AssetList extends (CustomElement(HTMLOListElement)) {
         }
         if (firstHighlightedAssetItem === undefined) {
             if (this.highlightedGraphemes !== "") {
-                this.highlight("")
+                this.highlight("");
+                return;
             }
-            return
+        } else {
+            firstHighlightedAssetItem.focus();
+            firstHighlightedAssetItem.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+            });
         }
-        firstHighlightedAssetItem.focus();
-        firstHighlightedAssetItem.scrollIntoView({
-            behavior: "smooth",
-            block: "nearest"
-        });
-
-        this.filterInput.value = this.highlightedGraphemes;
+	console.log('grapheme', this.highlightedGraphemes);
+        this.searchText.innerText = this.highlightedGraphemes;
     }
     mount() {
-        this.filterInput = document.getElementById('filter');
-        this.filterInput.addEventListener("keyup", this.keystroke);
+        this.searchText = document.getElementById('searchText');
+        document.body.addEventListener("keyup", this.keystroke);
     }
     keystroke({key: key}) {
         if (key === "Escape") {
@@ -321,7 +334,20 @@ function main() {
     AssetList.define()
 }
 document.addEventListener("DOMContentLoaded", main);
-                </script>
+
+  ]]>
+</xsl:variable>
+
+<script type="text/javascript">
+  <xsl:text disable-output-escaping="yes">
+    /* &lt;![CDATA[ */
+  </xsl:text>
+  <xsl:value-of select="$s1" disable-output-escaping="yes"/>
+  <xsl:text disable-output-escaping="yes">
+    /* ]]&gt; */
+  </xsl:text>
+</script>
+
             </body>
         </html>
     </xsl:template>
