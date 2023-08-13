@@ -39,7 +39,7 @@
 
         <html>
             <head>
-                <title><xsl:value-of select="$path"/></title>
+                <title></title>
 
                 <meta name="version" content="2.0.1" />
                 <meta name="viewport" content="initial-scale=1, shrink-to-fit=no, viewport-fit=cover, width=device-width, height=device-height" />
@@ -59,6 +59,7 @@
                                 --color-base0E: #AD00A1;
                         </xsl:otherwise>
                     </xsl:choose>
+                        --theme-text: var(--color-base07);
                         --theme-background: var(--color-base00);
                         --theme-link-directory: var(--color-base0D);
                         --theme-link-file: var(--color-base07);
@@ -124,7 +125,6 @@
 
                     .asset-link:any-link {
                         color: inherit;
-                        text-decoration: none
                     }
 
                     .asset-link:focus,.asset-link:hover {
