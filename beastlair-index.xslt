@@ -164,45 +164,47 @@
                     }
                 </style>
             </head>
-    <body>
-        <h2>Index of <xsl:value-of select="$path"/></h2>
-        <ol aria-label="asset list" is="asset-list" class="asset-list">
-            <xsl:for-each select="list/*">
-            <xsl:sort select="@mtime"/>
-                <li is="asset-item">
-                    <xsl:attribute name="class">
-                        <xsl:text>asset-item asset-item--</xsl:text>
-                        <xsl:value-of select="name()" />
-                    </xsl:attribute>
+            <body>
+                <h2>Index of <xsl:value-of select="$path"/></h2>
+                <ol aria-label="asset list" is="asset-list" class="asset-list">
+                    <xsl:for-each select="list/*">
+                    <xsl:sort select="@mtime"/>
+                        <li is="asset-item">
+                            <xsl:attribute name="class">
+                                <xsl:text>asset-item asset-item--</xsl:text>
+                                <xsl:value-of select="name()" />
+                            </xsl:attribute>
 
-                    <a is="asset-link">
-                        <xsl:attribute name="aria-label">
-                            <xsl:value-of select="name()" />
-                            <xsl:text> </xsl:text>
-                            <xsl:value-of select="." />
-                        </xsl:attribute>
+                            <a is="asset-link">
+                                <xsl:attribute name="aria-label">
+                                    <xsl:value-of select="name()" />
+                                    <xsl:text> </xsl:text>
+                                    <xsl:value-of select="." />
+                                </xsl:attribute>
 
-                        <xsl:attribute name="data-name">
-                            <xsl:value-of select="." />
-                        </xsl:attribute>
+                                <xsl:attribute name="data-name">
+                                    <xsl:value-of select="." />
+                                </xsl:attribute>
 
-                        <xsl:attribute name="href">
-                            <xsl:value-of select="." />
-                            <xsl:if test="name() = 'directory'">
-                                <xsl:text>/</xsl:text>
-                            </xsl:if>
-                        </xsl:attribute>
+                                <xsl:attribute name="href">
+                                    <xsl:value-of select="." />
+                                    <xsl:if test="name() = 'directory'">
+                                        <xsl:text>/</xsl:text>
+                                    </xsl:if>
+                                </xsl:attribute>
 
-                        <xsl:attribute name="class">
-                            <xsl:text>asset-link asset-link--</xsl:text>
-                            <xsl:value-of select="name()" />
-                        </xsl:attribute>
+                                <xsl:attribute name="class">
+                                    <xsl:text>asset-link asset-link--</xsl:text>
+                                    <xsl:value-of select="name()" />
+                                </xsl:attribute>
 
-                        <xsl:value-of select="." />
-                    </a>
-                </li>
-            </xsl:for-each>
-        </ol>
-        <script src="./beastlair-index.js"></script>
-    </body>
-</html>
+                                <xsl:value-of select="." />
+                            </a>
+                        </li>
+                    </xsl:for-each>
+                </ol>
+                <script src="./beastlair-index.js"></script>
+            </body>
+        </html>
+    </xsl:template>
+</xsl:stylesheet>
