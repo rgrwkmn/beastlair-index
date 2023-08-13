@@ -87,7 +87,8 @@
                     html {
                         background-color: var(--theme-background);
                         font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-                        font-size: 100%
+                        font-size: 100%;
+                        color: var(--theme-text);
                     }
 
                     .asset-list {
@@ -165,7 +166,6 @@
                 </style>
             </head>
             <body>
-                <h2>Index of <xsl:value-of select="$path"/></h2>
                 <ol aria-label="asset list" is="asset-list" class="asset-list">
                     <xsl:for-each select="list/*">
                     <xsl:sort select="@mtime"/>
