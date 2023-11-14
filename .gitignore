@@ -1,0 +1,6 @@
+node_modules
+stagegallery/*
+public/*.html
+public/*_gallery
+public/*.png
+public/*.jpg
