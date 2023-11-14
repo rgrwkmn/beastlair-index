@@ -1,6 +1,5 @@
 node_modules
 stagegallery/*
-public/**/*.html
-public/**/*_gallery
-public/**/*.png
-public/**/*.jpg
+public/**
+!public/index.md
+!public/style.css
