@@ -1,0 +1,24 @@
+{
+  "name": "beastlair-index",
+  "version": "0.0.1",
+  "description": "BEAST LAIR",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rgrwkmn/beastlair-index.git"
+  },
+  "author": "Roger Wakeman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rgrwkmn/beastlair-index/issues"
+  },
+  "homepage": "https://github.com/rgrwkmn/beastlair-index#readme",
+  "devDependencies": {
+    "image-size": "^1.0.2",
+    "marked": "^9.1.4"
+  }
+}
