@@ -7,6 +7,10 @@ These are the custom tools I use to
 1. Manage the images I generate with ComfyUI and Automatic1111
 2. Generate a static website of image galleries.
 
+## Installation
+
+Run `npm install` to install dependencies.
+
 ## Static Website Generation
 
 ### Add New Galleries
